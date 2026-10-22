@@ -10,6 +10,8 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-10-22
+
 ### Added
 
 - A **Komga** device: online, libraries, series, books, series in progress,
@@ -29,4 +31,5 @@ the notes of the version's GitHub Release.
   reaches Gladys within seconds.
 - Texts and documentation in English, French, German and Spanish.
 
-[Unreleased]: https://github.com/guim31/gladys-komga/commits/main
+[Unreleased]: https://github.com/guim31/gladys-komga/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/guim31/gladys-komga/releases/tag/v1.0.0
