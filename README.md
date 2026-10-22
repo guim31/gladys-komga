@@ -46,7 +46,7 @@ links it from the Configuration screen.
   (or HTTP Basic). `GET /api/v2/users/me` tells whether the account is an
   administrator.
 - One reading every 1 to 15 minutes (5 by default), on a timer of the
-  container (`should_poll: false`): libraries, new series, latest books,
+  container (`should_poll: false`): libraries, new series, books by creation date,
   series in progress, books in progress and books read last (sorted by read
   date), and hourly the version (`/actuator/info`, admin). About seven light
   requests.

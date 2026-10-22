@@ -167,9 +167,13 @@ export class KomgaClient {
     return this.page(`/api/v1/series/new?page=0&size=${size}`);
   }
 
-  /** The last books created, the newest first (the total counts every book). */
+  /**
+   * The last books created, the newest first (the total counts every book).
+   * Not /books/latest: it sorts by modification, and a metadata refresh would
+   * push a new book out of the window.
+   */
   latestBooks(size) {
-    return this.page(`/api/v1/books/latest?page=0&size=${size}`);
+    return this.page(`/api/v1/books?sort=createdDate,desc&page=0&size=${size}`);
   }
 
   /** The series in progress (only their count is used). */

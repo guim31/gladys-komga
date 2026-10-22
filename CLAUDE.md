@@ -254,7 +254,7 @@ long, et sur un « Sie »/« Ihr… » de politesse en allemand. Le store exige 
 - **Admin seulement** : `GET /actuator/info` (version dans `build.version`) et `POST /api/v1/libraries/{id}/scan`
   (202) répondent 403 à un lecteur. Tout le reste (listes, compteurs) ne voit que les bibliothèques du compte.
 - **Listes** (pages Spring : `content`, `totalElements`) : `GET /api/v1/series/new` (toutes les séries, les plus
-  récentes d'abord ; `totalElements` = nombre de séries), `GET /api/v1/books/latest` (idem pour les tomes),
+  récentes d'abord ; `totalElements` = nombre de séries), `GET /api/v1/books?sort=createdDate,desc` (idem pour les tomes : **pas `/books/latest`, trié par date de modification**, vérifié en 1.29.1 : un « refresh metadata » y fait remonter de vieux tomes),
   `GET /api/v1/series?read_status=IN_PROGRESS`, `GET /api/v1/books?read_status=READ|IN_PROGRESS&sort=readProgress.readDate,desc`
   (route GET encore servie en 1.29). `/api/v1/series/updated` et `/api/v1/books/ondeck` existent mais ne servent
   pas ici (ondeck = tome suivant d'une série commencée, vide tant qu'aucun tome n'est fini).

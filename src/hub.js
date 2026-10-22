@@ -121,17 +121,20 @@ export function dayOf(at) {
 
 /**
  * The items newer than a cursor `{ at, ids }`, and the cursor moved to the
- * newest of them. Without a cursor yet, nothing is new: the newest becomes it.
+ * newest of them. Without a cursor yet, nothing is new: the newest becomes it
+ * (`emptyAt` when there is none, so that a library shared later with the
+ * account does not replay its history).
  * @param {{ at: number, ids: string[] }|null} cursor
  * @param {Array<{ id: string }>} items
  * @param {(item: object) => number|null} timeOf
+ * @param {number} [emptyAt]
  */
-export function advanceCursor(cursor, items, timeOf) {
+export function advanceCursor(cursor, items, timeOf, emptyAt = 0) {
   const dated = items.filter((item) => Number.isFinite(timeOf(item)));
   const newest = dated.reduce((max, item) => Math.max(max, timeOf(item)), -Infinity);
   const valid = cursor && Number.isFinite(cursor.at) && Array.isArray(cursor.ids);
   if (!valid) {
-    const at = Number.isFinite(newest) ? newest : 0;
+    const at = Number.isFinite(newest) ? newest : emptyAt;
     const ids = dated.filter((item) => timeOf(item) === at).map((item) => item.id);
     return { fresh: [], cursor: { at, ids: ids.slice(0, MAX_CURSOR_IDS) }, changed: true };
   }
@@ -345,7 +348,14 @@ export class KomgaHub {
       return;
     }
     const client = this.client;
-    const stream = this.openStream(`${client.url}/sse/v1/events`, client.headers);
+    let stream;
+    try {
+      stream = this.openStream(`${client.url}/sse/v1/events`, client.headers);
+    } catch (err) {
+      // A header Node refuses (a pasted key with a line break): readings go on without it.
+      this.problem('stream', `Komga: event stream not opened (${err.code ?? err.message})`);
+      return;
+    }
     this.stream = stream;
     stream.on('open', () => {
       this.streamRetryMs = this.timings.streamRetryMs;
@@ -424,7 +434,8 @@ export class KomgaHub {
         logger.info('Komga: connection restored');
       } else if (this.snapshot.reachable === null) {
         const role = this.client.user?.admin ? 'administrator' : 'reader';
-        logger.info(`Komga: connected, version ${this.snapshot.version ?? '?'}, ${role} account`);
+        const version = this.snapshot.version ? `version ${this.snapshot.version}, ` : '';
+        logger.info(`Komga: connected, ${version}${role} account`);
       }
       if (this.snapshot.reachable !== true) {
         changed.add(WIDGET_KEYS.RECENTLY_ADDED).add(WIDGET_KEYS.CONTINUE_READING);
@@ -569,19 +580,26 @@ export class KomgaHub {
     }
   }
 
-  /** Move a saved cursor; returns the new items. */
+  /**
+   * The items newer than a saved cursor, and `commit()` to move the cursor.
+   * Committed only once the requests a scene event needs have answered: a
+   * reading that fails halfway announces the same items at the next one.
+   */
   advance(name, items, timeOf) {
-    const { fresh, cursor, changed } = advanceCursor(this.saved[name], items, timeOf);
-    if (changed) {
-      this.saved[name] = cursor;
-      this.store.save(this.saved);
-    }
-    return fresh;
+    const { fresh, cursor, changed } = advanceCursor(this.saved[name], items, timeOf, this.now());
+    const commit = () => {
+      if (changed) {
+        this.saved[name] = cursor;
+        this.store.save(this.saved);
+      }
+    };
+    return { fresh, commit };
   }
 
   /** New series, created after the cursor. Returns their ids. */
   async announceSeries(recent) {
-    const fresh = this.advance('series', recent, (series) => series.createdAt);
+    const { fresh, commit } = this.advance('series', recent, (series) => series.createdAt);
+    commit();
     for (const series of fresh.slice(-this.timings.maxEventsPerRead)) {
       logger.debug(`New series: "${series.title}" (${series.library})`);
       await this.fire(TRIGGERS.SERIES_ADDED, {
@@ -596,8 +614,9 @@ export class KomgaHub {
   /** New books of series that existed before (a new series is announced as such). */
   async announceBooks(client, latest, recent, seriesCursor, newSeries) {
     const hadCursor = Boolean(this.saved.books);
-    const fresh = this.advance('books', latest, (book) => book.createdAt);
+    const { fresh, commit } = this.advance('books', latest, (book) => book.createdAt);
     if (!hadCursor || !seriesCursor || fresh.length === 0) {
+      commit();
       return;
     }
     const minAt = this.now() - this.timings.eventMaxAgeMs;
@@ -607,14 +626,18 @@ export class KomgaHub {
     const created = new Map(recent.map((series) => [series.id, series.createdAt]));
     for (const book of candidates) {
       if (!created.has(book.seriesId) && book.seriesId) {
+        // A server down here throws: the cursor stays, the next reading retries.
         const series = parseSeries(await this.optional(client, 'series', book.seriesId));
         created.set(book.seriesId, series?.createdAt ?? null);
       }
-      // The series of a big scan, beyond the list of the last series: new too.
+    }
+    commit();
+    // The series of a big scan, beyond the list of the last series: new too.
+    const announced = candidates.filter((book) => {
       const seriesAt = created.get(book.seriesId);
-      if (seriesAt !== null && seriesAt !== undefined && seriesAt > seriesCursor.at) {
-        continue;
-      }
+      return seriesAt === null || seriesAt === undefined || seriesAt <= seriesCursor.at;
+    });
+    for (const book of announced) {
       logger.debug(`New book: "${book.title}" (${book.series})`);
       await this.fire(TRIGGERS.BOOK_ADDED, {
         series: book.series,
@@ -626,12 +649,19 @@ export class KomgaHub {
 
   /** Series read to the end by a book read since the previous reading. */
   async announceFinished(client, read) {
-    const fresh = this.advance('read', read, (book) => (book.completed ? book.readAt : null));
+    const { fresh, commit } = this.advance('read', read, (book) =>
+      book.completed ? book.readAt : null,
+    );
     const seriesIds = [...new Set(fresh.map((book) => book.seriesId).filter(Boolean))].slice(
       -this.timings.maxEventsPerRead,
     );
+    // Every series first (a server down throws before the cursor moves).
+    const list = [];
     for (const seriesId of seriesIds) {
-      const series = parseSeries(await this.optional(client, 'series', seriesId), this.libraries);
+      list.push(parseSeries(await this.optional(client, 'series', seriesId), this.libraries));
+    }
+    commit();
+    for (const series of list) {
       if (!series?.finished) {
         continue;
       }

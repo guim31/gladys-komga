@@ -198,7 +198,7 @@ export class FakeKomga {
     if (path === '/api/v1/series/new') {
       return page(allSeries.sort(byDesc((series) => series.created)), size);
     }
-    if (path === '/api/v1/books/latest') {
+    if (path === '/api/v1/books' && searchParams.get('sort') === 'createdDate,desc') {
       return page(allBooks.sort(byDesc((book) => book.created)), size);
     }
     if (path === '/api/v1/series' && searchParams.get('read_status') === 'IN_PROGRESS') {

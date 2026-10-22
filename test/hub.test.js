@@ -389,3 +389,37 @@ test('advanceCursor: the first call only sets the cursor', () => {
   );
   assert.deepEqual(next.cursor, { at: 2000, ids: ['b', 'c', 'd'] });
 });
+
+test('advanceCursor: an empty list starts from now, not from the epoch', () => {
+  const first = advanceCursor(null, [], (item) => item.at, 5000);
+  assert.deepEqual(first.cursor, { at: 5000, ids: [] });
+  const old = advanceCursor(first.cursor, [{ id: 'old', at: 1000 }], (item) => item.at);
+  assert.deepEqual(old.fresh, []);
+});
+
+test('a server lost halfway: the finished series is announced at the next reading', async (t) => {
+  const w = await world(t);
+  w.clock.advance(60_000);
+  w.server.read(w.server.bookOf('Red Planet v02'), w.clock.now());
+  const route = w.server.route.bind(w.server);
+  // The server stops answering when the series is asked, after the lists.
+  w.server.route = (path, ...rest) => {
+    if (/^\/api\/v1\/series\/[0-9A-Z]+$/.test(path)) {
+      w.server.online = false;
+      const error = new Error('socket hang up');
+      error.code = 'ECONNRESET';
+      throw error;
+    }
+    return route(path, ...rest);
+  };
+  await w.hub.refresh();
+  assert.equal(events(w, TRIGGERS.SERIES_FINISHED).length, 0);
+  assert.equal(state(w, KEYS.ONLINE), 0);
+  w.server.route = route;
+  w.server.online = true;
+  await w.hub.refresh();
+  assert.deepEqual(
+    events(w, TRIGGERS.SERIES_FINISHED).map((event) => event.data.title),
+    ['Red Planet'],
+  );
+});
