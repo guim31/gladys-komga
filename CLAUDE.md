@@ -32,15 +32,21 @@ pushing.
 
 ```
 index.js                          SDK wiring only: handlers registered before connect()
-src/devices/index.js              registry of the device blueprints + dispatch helpers
-src/devices/<type>.js             one device type per file (buildDevice, onPoll, onSetValue...)
+src/app.js                        registers every SDK handler on the hub (index.js and the tests)
+src/hub.js                        reads Komga on its own timer, states, scene events and cursors, actions
+src/devices.js                    the "Komga" device: features, names in four languages, values
+src/komga/client.js               REST client: API key or HTTP Basic, error kinds
+src/komga/events.js               the Server-Sent Events stream (wakes the hub up) and its parser
+src/komga/http.js                 the one request function (node:http/https), the test seam
+src/komga/model.js                parsers of the Komga answers (series, books, libraries, dates)
 src/scenes.js                     scene action handlers (manifest `scene_actions`)
-src/widgets.js                    dashboard widget handlers (manifest `widgets`)
+src/widgets.js                    dashboard widget handlers and covers (manifest `widgets`)
+src/texts.js                      status, errors, reports and sentences, four languages
+src/store.js                      cursors of the scene events under /data
 src/config.js                     DEFAULT_CONFIG (mirrors the manifest defaults) + normalization
-src/weather.js                    example driver (Open-Meteo)
 gladys-assistant-integration.json manifest: name, config_schema, actions, image...
-docs/en.md, docs/fr.md            user documentation, re-hosted by Gladys (mandatory)
-test/                             node --test, against the SDK's fake Gladys (integration-sdk/testing)
+docs/{en,fr,de,es}.md             user documentation, re-hosted by Gladys (en and fr mandatory)
+test/                             node --test, against the SDK's fake Gladys and test/helpers/fakeKomga.js
 .github/scripts/release.mjs       release helpers (manifest bump, changelog), tested in test/
 ```
 
@@ -70,8 +76,9 @@ test/                             node --test, against the SDK's fake Gladys (in
   `type: "provider"`: 5.1.0). `test/manifest.test.js` ties the manifest to the
   code (defaults, action, scene and widget handlers): change both sides
   together.
-- **User-facing text** is bilingual (English and French): action messages,
-  manifest texts, and `docs/en.md` / `docs/fr.md`, kept in sync.
+- **User-facing text** exists in four languages (English, French, German,
+  Spanish): action messages, widget texts, feature names, manifest texts, and
+  `docs/{en,fr,de,es}.md`, kept in sync (`test/i18n.test.js`).
 - **Style.** Prettier formats, ESLint catches mistakes. Comments explain why,
   in English. Tests never touch the network.
 
@@ -233,3 +240,33 @@ long, et sur un « Sie »/« Ihr… » de politesse en allemand. Le store exige 
 - Docs `en`, `fr`, `de`, `es` avec les mêmes sections.
 - Chauffe, ouverture, sécurité : ne rien rendre pilotable « comme un thermostat » ou par un assistant
   vocal quand une erreur serait dangereuse (leçon d'OctoPrint).
+
+## Komga (propre à cette intégration)
+
+- **Modèle** : calquée sur `guim31/gladys-kavita` (mêmes clés de widgets et d'actions, même hub, mêmes curseurs
+  sous `/data`) ; le déclencheur « nouveau tome » s'appelle ici `book_added`.
+- **Version testée** : Komga **1.29.1** (`gotson/komga`, 14/10/2026), en Docker avec des CBZ générés. Démarrage
+  lent (≈ 1 min 30 avant la première réponse HTTP). Premier compte : `POST /api/v1/claim` avec les en-têtes
+  `X-Komga-Email` / `X-Komga-Password`.
+- **Authentification** : en-tête `X-API-Key` (clés depuis Komga **1.12.0**, août 2024 ; créées par
+  `POST /api/v2/users/me/api-keys`), sinon HTTP Basic e-mail/mot de passe. `GET /api/v2/users/me` donne `id`,
+  `email`, `roles` (`ADMIN` pour un administrateur).
+- **Admin seulement** : `GET /actuator/info` (version dans `build.version`) et `POST /api/v1/libraries/{id}/scan`
+  (202) répondent 403 à un lecteur. Tout le reste (listes, compteurs) ne voit que les bibliothèques du compte.
+- **Listes** (pages Spring : `content`, `totalElements`) : `GET /api/v1/series/new` (toutes les séries, les plus
+  récentes d'abord ; `totalElements` = nombre de séries), `GET /api/v1/books?sort=createdDate,desc` (idem pour les tomes : **pas `/books/latest`, trié par date de modification**, vérifié en 1.29.1 : un « refresh metadata » y fait remonter de vieux tomes),
+  `GET /api/v1/series?read_status=IN_PROGRESS`, `GET /api/v1/books?read_status=READ|IN_PROGRESS&sort=readProgress.readDate,desc`
+  (route GET encore servie en 1.29). `/api/v1/series/updated` et `/api/v1/books/ondeck` existent mais ne servent
+  pas ici (ondeck = tome suivant d'une série commencée, vide tant qu'aucun tome n'est fini).
+- **Dates** en UTC avec `Z`, **à la seconde** : un scan crée plusieurs séries dans la même seconde, d'où les
+  curseurs `{ at, ids }` (`advanceCursor` dans `src/hub.js`).
+- **Ids** : chaînes base32 Crockford en **majuscules** (`0S09NT9YS3TF5`). Le cœur exige des clés d'image en
+  minuscules (`^[a-z0-9][a-z0-9-]{0,63}$`) : la clé met l'id en minuscules, `getImage` le remet en majuscules.
+- **Vignettes** : `GET /api/v1/{series|books}/{id}/thumbnail`, JPEG (≈ 2 Ko en 200 × 300 pour les CBZ de test).
+- **SSE** `GET /sse/v1/events` (même authentification) : `SeriesAdded`, `BookAdded`, `TaskQueueStatus`… pour
+  tous ; `ReadProgressChanged` / `ReadProgressSeriesChanged` **seulement pour le compte qui lit**. Commentaires
+  `:heartbeat` réguliers. Ils ne font qu'avancer la lecture suivante (5 s) ; minuteur de repli de 10 min sans
+  données, reconnexion de 1 à 15 min.
+- **Série finie** : un tome lu depuis le curseur de lecture (`readProgress.readDate`) dont la série a
+  `booksReadCount >= booksCount` (`GET /api/v1/series/{id}`) ; mémorisée avec son nombre de tomes, pour qu'un
+  tome ajouté puis lu redéclenche l'événement.

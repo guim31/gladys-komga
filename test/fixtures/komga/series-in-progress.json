@@ -1,0 +1,86 @@
+{
+  "content": [
+    {
+      "id": "0S09NT9YS3TF5",
+      "libraryId": "0S09NT9F53PAK",
+      "name": "Blue Skies",
+      "url": "/books/Comics/Blue Skies",
+      "created": "2026-10-22T10:53:02Z",
+      "lastModified": "2026-10-22T10:53:02Z",
+      "fileLastModified": "2026-10-22T10:51:06Z",
+      "booksCount": 2,
+      "booksReadCount": 0,
+      "booksUnreadCount": 1,
+      "booksInProgressCount": 1,
+      "metadata": {
+        "status": "ONGOING",
+        "statusLock": false,
+        "title": "Blue Skies",
+        "titleLock": false,
+        "titleSort": "Blue Skies",
+        "titleSortLock": false,
+        "summary": "",
+        "summaryLock": false,
+        "readingDirection": "",
+        "readingDirectionLock": false,
+        "publisher": "",
+        "publisherLock": false,
+        "ageRating": null,
+        "ageRatingLock": false,
+        "language": "",
+        "languageLock": false,
+        "genres": [],
+        "genresLock": false,
+        "tags": [],
+        "tagsLock": false,
+        "totalBookCount": null,
+        "totalBookCountLock": false,
+        "sharingLabels": [],
+        "sharingLabelsLock": false,
+        "links": [],
+        "linksLock": false,
+        "alternateTitles": [],
+        "alternateTitlesLock": false,
+        "created": "2026-10-22T10:53:02Z",
+        "lastModified": "2026-10-22T10:53:06Z"
+      },
+      "booksMetadata": {
+        "authors": [],
+        "notableEntities": [],
+        "tags": [],
+        "releaseDate": null,
+        "summary": "",
+        "summaryNumber": "",
+        "created": "2026-10-22T10:53:02Z",
+        "lastModified": "2026-10-22T10:53:06Z"
+      },
+      "deleted": false,
+      "oneshot": false
+    }
+  ],
+  "pageable": {
+    "pageNumber": 0,
+    "pageSize": 1,
+    "sort": {
+      "empty": true,
+      "sorted": false,
+      "unsorted": true
+    },
+    "offset": 0,
+    "paged": true,
+    "unpaged": false
+  },
+  "totalElements": 2,
+  "totalPages": 2,
+  "last": false,
+  "size": 1,
+  "number": 0,
+  "numberOfElements": 1,
+  "sort": {
+    "empty": true,
+    "sorted": false,
+    "unsorted": true
+  },
+  "first": true,
+  "empty": false
+}
