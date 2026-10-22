@@ -1,0 +1,88 @@
+{
+  "content": [
+    {
+      "id": "0S09NT9XN3Y2P",
+      "seriesId": "0S09NT9XH3WXS",
+      "seriesTitle": "Red Planet",
+      "libraryId": "0S09NT9F53PAK",
+      "name": "Red Planet v01",
+      "url": "/books/Comics/Red Planet/Red Planet v01.cbz",
+      "number": 1,
+      "created": "2026-10-22T10:53:02Z",
+      "lastModified": "2026-10-22T10:54:08Z",
+      "fileLastModified": "2026-10-22T10:51:07Z",
+      "sizeBytes": 14206,
+      "size": "13.9 KiB",
+      "media": {
+        "status": "READY",
+        "mediaType": "application/zip",
+        "pagesCount": 3,
+        "comment": "",
+        "epubDivinaCompatible": false,
+        "epubIsKepub": false,
+        "mediaProfile": "DIVINA"
+      },
+      "metadata": {
+        "title": "Red Planet v01",
+        "titleLock": false,
+        "summary": "",
+        "summaryLock": false,
+        "number": "1",
+        "numberLock": false,
+        "numberSort": 1.0,
+        "numberSortLock": false,
+        "releaseDate": null,
+        "releaseDateLock": false,
+        "authors": [],
+        "authorsLock": false,
+        "notableEntities": [],
+        "notableEntitiesLock": false,
+        "tags": [],
+        "tagsLock": false,
+        "isbn": "",
+        "isbnLock": false,
+        "links": [],
+        "linksLock": false,
+        "created": "2026-10-22T10:53:02Z",
+        "lastModified": "2026-10-22T10:54:08Z"
+      },
+      "readProgress": {
+        "page": 3,
+        "completed": true,
+        "readDate": "2026-10-22T10:53:26Z",
+        "created": "2026-10-22T10:53:26Z",
+        "lastModified": "2026-10-22T10:53:26Z",
+        "deviceId": "",
+        "deviceName": ""
+      },
+      "deleted": false,
+      "fileHash": "5bf75c19c4cf89ddaf576f5ec4be872e",
+      "oneshot": false
+    }
+  ],
+  "pageable": {
+    "pageNumber": 0,
+    "pageSize": 20,
+    "sort": {
+      "empty": false,
+      "sorted": true,
+      "unsorted": false
+    },
+    "offset": 0,
+    "paged": true,
+    "unpaged": false
+  },
+  "totalElements": 1,
+  "totalPages": 1,
+  "last": true,
+  "size": 20,
+  "number": 0,
+  "numberOfElements": 1,
+  "sort": {
+    "empty": false,
+    "sorted": true,
+    "unsorted": false
+  },
+  "first": true,
+  "empty": false
+}

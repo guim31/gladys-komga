@@ -1,0 +1,88 @@
+{
+  "content": [
+    {
+      "id": "0S09NT9YX3ZJ5",
+      "seriesId": "0S09NT9YS3TF5",
+      "seriesTitle": "Blue Skies",
+      "libraryId": "0S09NT9F53PAK",
+      "name": "Blue Skies v01",
+      "url": "/books/Comics/Blue Skies/Blue Skies v01.cbz",
+      "number": 1,
+      "created": "2026-10-22T10:53:03Z",
+      "lastModified": "2026-10-22T10:53:07Z",
+      "fileLastModified": "2026-10-22T10:51:06Z",
+      "sizeBytes": 18955,
+      "size": "18.5 KiB",
+      "media": {
+        "status": "READY",
+        "mediaType": "application/zip",
+        "pagesCount": 4,
+        "comment": "",
+        "epubDivinaCompatible": false,
+        "epubIsKepub": false,
+        "mediaProfile": "DIVINA"
+      },
+      "metadata": {
+        "title": "Blue Skies v01",
+        "titleLock": false,
+        "summary": "",
+        "summaryLock": false,
+        "number": "1",
+        "numberLock": false,
+        "numberSort": 1.0,
+        "numberSortLock": false,
+        "releaseDate": null,
+        "releaseDateLock": false,
+        "authors": [],
+        "authorsLock": false,
+        "notableEntities": [],
+        "notableEntitiesLock": false,
+        "tags": [],
+        "tagsLock": false,
+        "isbn": "",
+        "isbnLock": false,
+        "links": [],
+        "linksLock": false,
+        "created": "2026-10-22T10:53:03Z",
+        "lastModified": "2026-10-22T10:53:03Z"
+      },
+      "readProgress": {
+        "page": 2,
+        "completed": false,
+        "readDate": "2026-10-22T10:53:26Z",
+        "created": "2026-10-22T10:53:26Z",
+        "lastModified": "2026-10-22T10:53:26Z",
+        "deviceId": "",
+        "deviceName": ""
+      },
+      "deleted": false,
+      "fileHash": "b2b964cdc361e30a0df7c364b2be686a",
+      "oneshot": false
+    }
+  ],
+  "pageable": {
+    "pageNumber": 0,
+    "pageSize": 8,
+    "sort": {
+      "empty": false,
+      "sorted": true,
+      "unsorted": false
+    },
+    "offset": 0,
+    "paged": true,
+    "unpaged": false
+  },
+  "totalElements": 1,
+  "totalPages": 1,
+  "last": true,
+  "size": 8,
+  "number": 0,
+  "numberOfElements": 1,
+  "sort": {
+    "empty": false,
+    "sorted": true,
+    "unsorted": false
+  },
+  "first": true,
+  "empty": false
+}

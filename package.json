@@ -1,8 +1,8 @@
 {
-  "name": "gladys-integration-template-js",
+  "name": "gladys-komga",
   "version": "1.0.0",
   "private": true,
-  "description": "Official starter template to build an external integration for Gladys Assistant with the JavaScript SDK.",
+  "description": "Komga integration for Gladys Assistant: new series and books, reading in progress, finished series, library scans.",
   "type": "module",
   "main": "index.js",
   "scripts": {

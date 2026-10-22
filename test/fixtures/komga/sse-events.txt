@@ -1,0 +1,17 @@
+event:BookAdded
+data:{"bookId":"0S09P27XD3HE6","seriesId":"0S09NT9XH3WXS","libraryId":"0S09NT9F53PAK"}
+
+event:SeriesAdded
+data:{"seriesId":"0S09P27XH3SQP","libraryId":"0S09NT9F53PAK"}
+
+event:BookAdded
+data:{"bookId":"0S09P27XH3SQQ","seriesId":"0S09P27XH3SQP","libraryId":"0S09NT9F53PAK"}
+
+event:TaskQueueStatus
+data:{"count":1,"countByType":{"ScanLibrary":1}}
+
+:heartbeat
+
+event:TaskQueueStatus
+data:{"count":4,"countByType":{"RefreshBookMetadata":2,"RefreshSeriesMetadata":1,"ScanLibrary":1}}
+

@@ -1,177 +1,564 @@
 {
   "manifest_version": 1,
   "type": "device",
-  "name": "Demo Devices Template",
+  "name": "Komga",
   "description": {
-    "en": "Starter template showing sensors, a switch, a dimmable light and a smart plug.",
-    "fr": "Template de démarrage : capteurs, interrupteur, lampe variable et prise connectée."
+    "en": "Your Komga comics and manga server in Gladys: new series and books, reading in progress, scans.",
+    "fr": "Votre serveur Komga (BD, mangas) dans Gladys : nouvelles séries et tomes, lectures en cours, scans.",
+    "de": "Dein Komga-Server für Comics und Mangas in Gladys: neue Serien und Bände, laufende Lektüre, Scans.",
+    "es": "Su servidor de cómics y mangas Komga en Gladys: nuevas series y tomos, lecturas en curso, escaneos."
   },
   "version": "1.0.0",
-  "docker_image": "ghcr.io/gladysassistant/integration-template-js:1.0.0",
+  "docker_image": "ghcr.io/guim31/gladys-komga:1.0.0",
   "gladys_version": ">=5.1.0",
-  "cover_image": "https://raw.githubusercontent.com/GladysAssistant/integration-template-js/master/cover.png",
-  "categories": ["lighting", "security", "environment"],
+  "cover_image": "https://raw.githubusercontent.com/guim31/gladys-komga/main/cover.png",
+  "categories": ["multimedia"],
   "transports": ["local", "cloud"],
   "config_schema": [
     {
       "key": "intro",
       "type": "section",
-      "label": { "en": "Getting started", "fr": "Pour commencer" },
+      "label": {
+        "en": "Connect to your Komga server",
+        "fr": "Connexion à votre serveur Komga",
+        "de": "Verbindung zu deinem Komga-Server",
+        "es": "Conexión a su servidor Komga"
+      },
       "description": {
-        "en": "The demo weather station reads real data from the free Open-Meteo API: pick the coordinates to observe. No account, no API key.",
-        "fr": "La station météo de démonstration lit de vraies données via l'API gratuite Open-Meteo : choisissez les coordonnées à observer. Pas de compte, pas de clé d'API."
+        "en": "Enter the server address (e.g. http://192.168.1.20:25600) and an API key of your account: in Komga, Account settings > API Keys (Komga 1.12+). Older servers: the e-mail and password instead. An administrator account also gives the version and the scans.",
+        "fr": "Indiquez l'adresse du serveur (ex. http://192.168.1.20:25600) et une clé d'API de votre compte : dans Komga, Paramètres du compte > Clés d'API (Komga 1.12+). Serveur plus ancien : l'e-mail et le mot de passe à la place. Un compte admin donne aussi la version et les scans.",
+        "de": "Gib die Serveradresse (z. B. http://192.168.1.20:25600) und einen API-Schlüssel deines Kontos ein: in Komga unter Kontoeinstellungen > API-Schlüssel (ab Komga 1.12). Ältere Server: stattdessen E-Mail und Passwort. Ein Admin-Konto liefert auch Version und Scans.",
+        "es": "Introduzca la dirección (p. ej. http://192.168.1.20:25600) y una clave de API de su cuenta: en Komga, Ajustes de la cuenta > Claves de API (Komga 1.12+). Servidores antiguos: el correo y la contraseña en su lugar. Una cuenta admin da también la versión y los escaneos."
       },
       "links": [
         {
-          "url": "https://open-meteo.com/en/docs",
-          "label": { "en": "Open-Meteo documentation", "fr": "Documentation Open-Meteo" }
+          "url": "https://komga.org/docs/introduction",
+          "label": {
+            "en": "Komga documentation",
+            "fr": "Documentation de Komga",
+            "de": "Komga-Dokumentation",
+            "es": "Documentación de Komga"
+          }
         }
       ]
     },
     {
-      "key": "latitude",
-      "type": "number",
-      "label": { "en": "Latitude", "fr": "Latitude" },
-      "description": {
-        "en": "Latitude used for the demo weather sensor.",
-        "fr": "Latitude utilisée par le capteur météo de démonstration."
+      "key": "server_url",
+      "type": "string",
+      "label": {
+        "en": "Server URL",
+        "fr": "URL du serveur",
+        "de": "Server-URL",
+        "es": "URL del servidor"
       },
-      "placeholder": { "en": "e.g. 48.8566", "fr": "ex. 48.8566" },
-      "required": true,
-      "default": 48.8566,
-      "min": -90,
-      "max": 90
+      "description": {
+        "en": "Address of the server, port included (25600 by default). An https address behind a reverse proxy works too, with its base path.",
+        "fr": "Adresse du serveur, port inclus (25600 par défaut). Une adresse https derrière un reverse proxy fonctionne aussi, avec son chemin de base.",
+        "de": "Adresse des Servers mit Port (standardmäßig 25600). Eine https-Adresse hinter einem Reverse Proxy funktioniert ebenfalls, mit ihrem Basispfad.",
+        "es": "Dirección del servidor, puerto incluido (25600 por defecto). También funciona una dirección https detrás de un proxy inverso, con su ruta base."
+      },
+      "placeholder": {
+        "en": "http://192.168.1.20:25600",
+        "fr": "http://192.168.1.20:25600",
+        "de": "http://192.168.1.20:25600",
+        "es": "http://192.168.1.20:25600"
+      },
+      "required": true
     },
     {
-      "key": "longitude",
-      "type": "number",
-      "label": { "en": "Longitude", "fr": "Longitude" },
-      "description": {
-        "en": "Longitude used for the demo weather sensor.",
-        "fr": "Longitude utilisée par le capteur météo de démonstration."
+      "key": "api_key",
+      "type": "secret",
+      "label": {
+        "en": "API key",
+        "fr": "Clé d'API",
+        "de": "API-Schlüssel",
+        "es": "Clave de API"
       },
-      "placeholder": { "en": "e.g. 2.3522", "fr": "ex. 2.3522" },
-      "required": true,
-      "default": 2.3522,
-      "min": -180,
-      "max": 180
-    },
-    {
-      "key": "unit",
-      "type": "select",
-      "label": { "en": "Temperature unit", "fr": "Unité de température" },
       "required": false,
-      "default": "celsius",
+      "description": {
+        "en": "Recommended. Leave empty to use the e-mail and password below.",
+        "fr": "Recommandé. Laissez vide pour utiliser l'e-mail et le mot de passe ci-dessous.",
+        "de": "Empfohlen. Leer lassen, um E-Mail und Passwort unten zu verwenden.",
+        "es": "Recomendado. Déjelo vacío para usar el correo y la contraseña de abajo."
+      }
+    },
+    {
+      "key": "username",
+      "type": "string",
+      "label": {
+        "en": "E-mail (without API key)",
+        "fr": "E-mail (sans clé d'API)",
+        "de": "E-Mail (ohne API-Schlüssel)",
+        "es": "Correo (sin clave de API)"
+      },
+      "description": {
+        "en": "Only for a Komga older than 1.12: the e-mail you sign in with.",
+        "fr": "Seulement pour un Komga antérieur à la 1.12 : l'e-mail de connexion.",
+        "de": "Nur für ein Komga vor 1.12: die E-Mail, mit der du dich anmeldest.",
+        "es": "Solo para un Komga anterior a la 1.12: el correo con el que inicia sesión."
+      },
+      "required": false
+    },
+    {
+      "key": "password",
+      "type": "secret",
+      "label": {
+        "en": "Password (without API key)",
+        "fr": "Mot de passe (sans clé d'API)",
+        "de": "Passwort (ohne API-Schlüssel)",
+        "es": "Contraseña (sin clave de API)"
+      },
+      "required": false
+    },
+    {
+      "key": "poll_interval",
+      "type": "select",
+      "label": {
+        "en": "Refresh",
+        "fr": "Rafraîchissement",
+        "de": "Aktualisierung",
+        "es": "Actualización"
+      },
+      "description": {
+        "en": "How often the server is read (about seven light requests each time). New books and readings also bring the next reading forward.",
+        "fr": "Fréquence de lecture du serveur (environ sept requêtes légères à chaque fois). Les nouveaux tomes et les lectures avancent aussi la lecture suivante.",
+        "de": "Wie oft der Server gelesen wird (jedes Mal etwa sieben leichte Anfragen). Neue Bände und Lesefortschritte ziehen das nächste Lesen auch vor.",
+        "es": "Frecuencia de lectura del servidor (unas siete peticiones ligeras cada vez). Los nuevos tomos y las lecturas adelantan también la siguiente lectura."
+      },
+      "required": false,
+      "default": "300",
       "options": [
-        { "value": "celsius", "label": { "en": "Celsius", "fr": "Celsius" } },
-        { "value": "fahrenheit", "label": { "en": "Fahrenheit", "fr": "Fahrenheit" } }
+        {
+          "value": "60",
+          "label": {
+            "en": "1 minute",
+            "fr": "1 minute",
+            "de": "1 Minute",
+            "es": "1 minuto"
+          }
+        },
+        {
+          "value": "300",
+          "label": {
+            "en": "5 minutes",
+            "fr": "5 minutes",
+            "de": "5 Minuten",
+            "es": "5 minutos"
+          }
+        },
+        {
+          "value": "900",
+          "label": {
+            "en": "15 minutes",
+            "fr": "15 minutes",
+            "de": "15 Minuten",
+            "es": "15 minutos"
+          }
+        }
       ]
     },
     {
-      "key": "poll_frequency",
-      "type": "number",
-      "label": { "en": "Refresh interval (s)", "fr": "Intervalle de rafraîchissement (s)" },
+      "key": "language",
+      "type": "select",
+      "display": "radio",
+      "label": {
+        "en": "Language of the names",
+        "fr": "Langue des noms",
+        "de": "Sprache der Namen",
+        "es": "Idioma de los nombres"
+      },
       "description": {
-        "en": "How often sensors are polled, in seconds (one minute minimum).",
-        "fr": "Fréquence d'interrogation des capteurs, en secondes (une minute minimum)."
+        "en": "Language of the feature names and of the texts of the scene actions. Names are set when a device is created: to rename them after a change, delete and re-add the device.",
+        "fr": "Langue des noms de fonctionnalités et des textes des actions de scène. Les noms sont fixés à la création d'un appareil : pour les renommer après un changement, supprimez puis rajoutez l'appareil.",
+        "de": "Sprache der Funktionsnamen und der Texte der Szenenaktionen. Die Namen werden beim Erstellen eines Geräts festgelegt: Um sie nach einer Änderung umzubenennen, lösche das Gerät und füge es erneut hinzu.",
+        "es": "Idioma de los nombres de las funcionalidades y de los textos de las acciones de escena. Los nombres se fijan al crear un dispositivo: para cambiarlos, elimine el dispositivo y vuelva a añadirlo."
       },
       "required": false,
-      "default": 300,
-      "min": 60,
-      "max": 3600
+      "default": "fr",
+      "options": [
+        {
+          "value": "en",
+          "label": {
+            "en": "English",
+            "fr": "Anglais",
+            "de": "Englisch",
+            "es": "Inglés"
+          }
+        },
+        {
+          "value": "fr",
+          "label": {
+            "en": "French",
+            "fr": "Français",
+            "de": "Französisch",
+            "es": "Francés"
+          }
+        },
+        {
+          "value": "de",
+          "label": {
+            "en": "German",
+            "fr": "Allemand",
+            "de": "Deutsch",
+            "es": "Alemán"
+          }
+        },
+        {
+          "value": "es",
+          "label": {
+            "en": "Spanish",
+            "fr": "Espagnol",
+            "de": "Spanisch",
+            "es": "Español"
+          }
+        }
+      ]
     }
   ],
   "actions": [
     {
-      "key": "test_weather",
-      "label": { "en": "Test the weather provider", "fr": "Tester le fournisseur météo" },
+      "key": "test_connection",
+      "label": {
+        "en": "Test the connection",
+        "fr": "Tester la connexion",
+        "de": "Verbindung testen",
+        "es": "Probar la conexión"
+      },
+      "description": {
+        "en": "Reads the server now and reports what it finds.",
+        "fr": "Lit le serveur maintenant et indique ce qu'il trouve.",
+        "de": "Liest den Server sofort und meldet, was er findet.",
+        "es": "Lee el servidor ahora e indica lo que encuentra."
+      },
       "timeout_seconds": 30
-    },
-    {
-      "key": "identify",
-      "label": { "en": "Identify a device", "fr": "Identifier un appareil" },
-      "fields": [
-        {
-          "key": "device",
-          "type": "select",
-          "source": "devices",
-          "label": { "en": "Device", "fr": "Appareil" },
-          "required": true
-        }
-      ]
     }
   ],
   "scene_triggers": [
     {
-      "key": "motion_detected",
-      "label": { "en": "Motion detected", "fr": "Mouvement détecté" },
+      "key": "series_added",
+      "label": {
+        "en": "New series added",
+        "fr": "Nouvelle série ajoutée",
+        "de": "Neue Serie hinzugefügt",
+        "es": "Nueva serie añadida"
+      },
       "description": {
-        "en": "A demo motion sensor saw a person or an animal move.",
-        "fr": "Un détecteur de démonstration a vu bouger une personne ou un animal."
+        "en": "A new series (comic, manga, book) appears in a Komga library after a scan.",
+        "fr": "Une nouvelle série (BD, manga, livre) apparaît dans une bibliothèque Komga après un scan.",
+        "de": "Eine neue Serie (Comic, Manga, Buch) erscheint nach einem Scan in einer Komga-Bibliothek.",
+        "es": "Una nueva serie (cómic, manga, libro) aparece en una biblioteca de Komga tras un escaneo."
       },
       "fields": [
         {
-          "key": "device",
-          "type": "select",
-          "source": "devices",
-          "label": { "en": "Sensor", "fr": "Détecteur" }
-        },
-        {
-          "key": "target",
-          "type": "multi_select",
-          "label": { "en": "What moved", "fr": "Ce qui a bougé" },
-          "options": [
-            { "value": "person", "label": { "en": "Person", "fr": "Personne" } },
-            { "value": "animal", "label": { "en": "Animal", "fr": "Animal" } }
-          ]
+          "key": "library",
+          "type": "string",
+          "label": {
+            "en": "Library (empty: any)",
+            "fr": "Bibliothèque (vide : n'importe laquelle)",
+            "de": "Bibliothek (leer: beliebig)",
+            "es": "Biblioteca (vacío: cualquiera)"
+          },
+          "description": {
+            "en": "Exactly as shown in Komga.",
+            "fr": "Exactement comme dans Komga.",
+            "de": "Genau wie in Komga angezeigt.",
+            "es": "Exactamente como aparece en Komga."
+          }
         }
       ],
       "variables": [
         {
-          "key": "target",
+          "key": "title",
           "type": "string",
-          "label": { "en": "What moved", "fr": "Ce qui a bougé" }
+          "label": {
+            "en": "Series title",
+            "fr": "Titre de la série",
+            "de": "Titel der Serie",
+            "es": "Título de la serie"
+          }
+        },
+        {
+          "key": "library",
+          "type": "string",
+          "label": {
+            "en": "Library",
+            "fr": "Bibliothèque",
+            "de": "Bibliothek",
+            "es": "Biblioteca"
+          }
+        },
+        {
+          "key": "books",
+          "type": "number",
+          "label": {
+            "en": "Books in the series",
+            "fr": "Tomes de la série",
+            "de": "Bände der Serie",
+            "es": "Tomos de la serie"
+          }
+        }
+      ]
+    },
+    {
+      "key": "book_added",
+      "label": {
+        "en": "New book",
+        "fr": "Nouveau tome",
+        "de": "Neuer Band",
+        "es": "Nuevo tomo"
+      },
+      "description": {
+        "en": "A new book (volume, issue) is added to a series already in Komga.",
+        "fr": "Un nouveau tome (volume, numéro) est ajouté à une série déjà présente dans Komga.",
+        "de": "Ein neuer Band (Ausgabe, Heft) kommt zu einer Serie hinzu, die schon in Komga ist.",
+        "es": "Se añade un nuevo tomo (volumen, número) a una serie que ya está en Komga."
+      },
+      "fields": [
+        {
+          "key": "series",
+          "type": "string",
+          "label": {
+            "en": "Series (empty: any)",
+            "fr": "Série (vide : n'importe laquelle)",
+            "de": "Serie (leer: beliebig)",
+            "es": "Serie (vacío: cualquiera)"
+          },
+          "description": {
+            "en": "The title of the series you follow, exactly as shown in Komga.",
+            "fr": "Le titre de la série que vous suivez, exactement comme dans Komga.",
+            "de": "Der Titel der Serie, der du folgst, genau wie in Komga angezeigt.",
+            "es": "El título de la serie que sigue, exactamente como aparece en Komga."
+          }
+        }
+      ],
+      "variables": [
+        {
+          "key": "series",
+          "type": "string",
+          "label": {
+            "en": "Series title",
+            "fr": "Titre de la série",
+            "de": "Titel der Serie",
+            "es": "Título de la serie"
+          }
+        },
+        {
+          "key": "title",
+          "type": "string",
+          "label": {
+            "en": "Book title",
+            "fr": "Titre du tome",
+            "de": "Titel des Bandes",
+            "es": "Título del tomo"
+          }
+        },
+        {
+          "key": "library",
+          "type": "string",
+          "label": {
+            "en": "Library",
+            "fr": "Bibliothèque",
+            "de": "Bibliothek",
+            "es": "Biblioteca"
+          }
+        }
+      ]
+    },
+    {
+      "key": "series_finished",
+      "label": {
+        "en": "Series read to the end",
+        "fr": "Série lue jusqu'au bout",
+        "de": "Serie zu Ende gelesen",
+        "es": "Serie leída hasta el final"
+      },
+      "description": {
+        "en": "You finish the last unread book of a series (or mark it as read) in Komga.",
+        "fr": "Vous terminez le dernier tome non lu d'une série (ou la marquez comme lue) dans Komga.",
+        "de": "Du beendest den letzten ungelesenen Band einer Serie (oder markierst sie als gelesen) in Komga.",
+        "es": "Termina el último tomo sin leer de una serie (o la marca como leída) en Komga."
+      },
+      "fields": [
+        {
+          "key": "library",
+          "type": "string",
+          "label": {
+            "en": "Library (empty: any)",
+            "fr": "Bibliothèque (vide : n'importe laquelle)",
+            "de": "Bibliothek (leer: beliebig)",
+            "es": "Biblioteca (vacío: cualquiera)"
+          },
+          "description": {
+            "en": "Exactly as shown in Komga.",
+            "fr": "Exactement comme dans Komga.",
+            "de": "Genau wie in Komga angezeigt.",
+            "es": "Exactamente como aparece en Komga."
+          }
+        }
+      ],
+      "variables": [
+        {
+          "key": "title",
+          "type": "string",
+          "label": {
+            "en": "Series title",
+            "fr": "Titre de la série",
+            "de": "Titel der Serie",
+            "es": "Título de la serie"
+          }
+        },
+        {
+          "key": "library",
+          "type": "string",
+          "label": {
+            "en": "Library",
+            "fr": "Bibliothèque",
+            "de": "Bibliothek",
+            "es": "Biblioteca"
+          }
+        },
+        {
+          "key": "books",
+          "type": "number",
+          "label": {
+            "en": "Books in the series",
+            "fr": "Tomes de la série",
+            "de": "Bände der Serie",
+            "es": "Tomos de la serie"
+          }
         }
       ]
     }
   ],
   "scene_actions": [
     {
-      "key": "identify_device",
-      "label": { "en": "Identify a device", "fr": "Identifier un appareil" },
-      "description": {
-        "en": "Make a device signal itself (the demo light blinks).",
-        "fr": "Fait se signaler un appareil (la lampe de démonstration clignote)."
+      "key": "scan_library",
+      "label": {
+        "en": "Scan Komga libraries",
+        "fr": "Scanner les bibliothèques Komga",
+        "de": "Komga-Bibliotheken scannen",
+        "es": "Escanear bibliotecas de Komga"
       },
-      "timeout_seconds": 15,
+      "description": {
+        "en": "Komga looks for new files in one library or in all of them (administrator account).",
+        "fr": "Komga cherche les nouveaux fichiers dans une bibliothèque ou dans toutes (compte administrateur).",
+        "de": "Komga sucht neue Dateien in einer oder allen Bibliotheken (Admin-Konto).",
+        "es": "Komga busca archivos nuevos en una biblioteca o en todas (cuenta de administrador)."
+      },
+      "timeout_seconds": 60,
       "fields": [
         {
-          "key": "device",
-          "type": "select",
-          "source": "devices",
-          "label": { "en": "Device", "fr": "Appareil" },
-          "required": true
+          "key": "library",
+          "type": "string",
+          "label": {
+            "en": "Library (empty: all)",
+            "fr": "Bibliothèque (vide : toutes)",
+            "de": "Bibliothek (leer: alle)",
+            "es": "Biblioteca (vacío: todas)"
+          },
+          "description": {
+            "en": "Exactly as shown in Komga.",
+            "fr": "Exactement comme dans Komga.",
+            "de": "Genau wie in Komga angezeigt.",
+            "es": "Exactamente como aparece en Komga."
+          }
         }
       ],
       "outputs": [
         {
-          "key": "signalled",
-          "type": "boolean",
-          "label": { "en": "Device signalled", "fr": "Appareil signalé" }
+          "key": "libraries",
+          "type": "number",
+          "label": {
+            "en": "Libraries scanned",
+            "fr": "Bibliothèques scannées",
+            "de": "Gescannte Bibliotheken",
+            "es": "Bibliotecas escaneadas"
+          }
+        }
+      ]
+    },
+    {
+      "key": "read_latest_additions",
+      "label": {
+        "en": "Read the latest Komga additions",
+        "fr": "Lire les derniers ajouts de Komga",
+        "de": "Neueste Komga-Zugänge vorlesen",
+        "es": "Leer las últimas novedades de Komga"
+      },
+      "description": {
+        "en": "A sentence for a message: the series added in the last 7 days.",
+        "fr": "Une phrase pour un message : les séries ajoutées ces 7 derniers jours.",
+        "de": "Ein Satz für eine Nachricht: die in den letzten 7 Tagen hinzugefügten Serien.",
+        "es": "Una frase para un mensaje: las series añadidas en los últimos 7 días."
+      },
+      "timeout_seconds": 30,
+      "outputs": [
+        {
+          "key": "sentence",
+          "type": "string",
+          "label": {
+            "en": "Sentence",
+            "fr": "Phrase",
+            "de": "Satz",
+            "es": "Frase"
+          }
+        },
+        {
+          "key": "count",
+          "type": "number",
+          "label": {
+            "en": "New series",
+            "fr": "Nouvelles séries",
+            "de": "Neue Serien",
+            "es": "Series nuevas"
+          }
+        },
+        {
+          "key": "title",
+          "type": "string",
+          "label": {
+            "en": "Title of the latest one",
+            "fr": "Titre de la dernière",
+            "de": "Titel der neuesten",
+            "es": "Título de la última"
+          }
         }
       ]
     }
   ],
   "widgets": [
     {
-      "key": "demo_status",
-      "label": { "en": "Demo status", "fr": "État de la démo" },
-      "description": {
-        "en": "Live temperature and plug power, plug connection and observed location.",
-        "fr": "Température et puissance en direct, connexion de la prise, position observée."
+      "key": "recently_added",
+      "label": {
+        "en": "Komga: recently added",
+        "fr": "Komga : derniers ajouts",
+        "de": "Komga: neu hinzugefügt",
+        "es": "Komga: novedades"
       },
-      "icon": "activity",
-      "action_timeout_seconds": 15
+      "description": {
+        "en": "The last series added to Komga, with their covers.",
+        "fr": "Les dernières séries ajoutées à Komga, avec leurs couvertures.",
+        "de": "Die zuletzt zu Komga hinzugefügten Serien mit ihren Covern.",
+        "es": "Las últimas series añadidas a Komga, con sus portadas."
+      },
+      "icon": "book",
+      "action_timeout_seconds": 60
+    },
+    {
+      "key": "continue_reading",
+      "label": {
+        "en": "Komga: keep reading",
+        "fr": "Komga : lectures en cours",
+        "de": "Komga: weiterlesen",
+        "es": "Komga: seguir leyendo"
+      },
+      "description": {
+        "en": "Your books in progress on Komga, with their progress.",
+        "fr": "Vos tomes en cours sur Komga, avec leur progression.",
+        "de": "Deine angefangenen Bände auf Komga mit ihrem Fortschritt.",
+        "es": "Sus tomos en curso en Komga, con su progreso."
+      },
+      "icon": "book-open"
     }
   ]
 }
